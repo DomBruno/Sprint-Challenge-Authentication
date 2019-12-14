@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const session = require('express-session');
 
 const authenticate = require('../auth/authenticate-middleware.js');
 const authRouter = require('../auth/auth-router.js');
@@ -14,5 +15,19 @@ server.use(express.json());
 
 server.use('/api/auth', authRouter);
 server.use('/api/jokes', authenticate, jokesRouter);
+
+server.use(
+    session({
+      name: 'laffsesh',
+      secret: 'nobody tosses a dad joke!',
+      cookie: {
+        maxAge: 1 * 24 * 60 * 60 * 1000,
+        secure: true,
+      },
+      httpOnly: true, 
+      resave: false,
+      saveUninitialized: false,
+    })
+  );
 
 module.exports = server;
