@@ -30,7 +30,7 @@ router.post('/login', (req, res) => {
   db.findBy({ username })
     .then(user => {
       // ompare passwords
-      if (user && bcjs.compareSync(password, user.password)) {
+      if (user && bcrypt.compareSync(password, user.password)) {
       // make token if legit
         let token = generateToken(user);
         res
