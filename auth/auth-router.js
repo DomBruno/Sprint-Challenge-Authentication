@@ -4,10 +4,14 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 router.post('/register', (req, res) => {
+  // assign req.body to var credentials
   const credentials = req.body;
+
+  // generate password hash
   const hash = bcrypt.hashSync(credentials.password, 6);
   credentials.password = hash;
 
+  // add user and give them token
   Users.add(credentials)
     .then(saved => {
     // const token = genToken(saved);
@@ -20,10 +24,14 @@ router.post('/register', (req, res) => {
 });
 
 router.post('/login', (req, res) => {
+  // destructure values from req.body
   const { username, password } = req.body;
+  // find user in db
   db.findBy({ username })
     .then(user => {
+      // ompare passwords
       if (user && bcjs.compareSync(password, user.password)) {
+      // make token if legit
         let token = generateToken(user);
         res
           .status(200)
@@ -32,11 +40,12 @@ router.post('/login', (req, res) => {
             token: token
           });
       } else {
+        // return 401 if invalid
         res.status(401).json({ message: "Invalid credentials" });
       }
     })
     .catch(err => {
-      res.status(500).json({ message: "Error logging in" });
+      res.status(500).json({ message: "Error logging in at login endpoint" });
     });
 });
 
